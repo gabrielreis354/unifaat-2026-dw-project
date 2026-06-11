@@ -237,6 +237,8 @@ unifaat-2026-dw-project/
 │   ├── logs/
 │   ├── users/
 │   └── arquivo.txt
+├── tests/
+│   └── example.test.js
 ├── utils/
 │   ├── loadCommands.js
 │   └── migrationUtils.js
@@ -275,6 +277,8 @@ unifaat-2026-dw-project/
 - **`routes/`** - Definição de rotas HTTP
 
 - **`storage/`** - Armazenamento de arquivos enviados
+
+- **`tests/`** - Testes automatizados usando assert nativo
 
 - **`utils/`** - Funções utilitárias
 
@@ -415,4 +419,182 @@ export default {
 | `migrate:rollback` | - | Desfaz o último batch de migrations |
 | `seed` | - | Popula o banco com dados iniciais |
 | `test` | - | Executa testes |
+
+---
+
+## 📋 Tutorial: Criando e Executando Testes
+
+### Como Criar um Novo Teste
+
+1. **Crie o arquivo de teste** em `tests/`:
+
+```javascript
+// tests/myFeature.test.js
+
+import assert from 'node:assert'
+
+function calculateDiscount(price, discountPercent) {
+    return price * (1 - discountPercent / 100)
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+export default {
+    name: 'Feature Tests',
+    
+    async run() {
+        const tests = [
+            {
+                name: 'calculateDiscount: 10% de desconto em R$ 100 deve ser R$ 90',
+                fn: () => {
+                    const result = calculateDiscount(100, 10)
+                    assert.strictEqual(result, 90, 'Desconto incorreto')
+                }
+            },
+            {
+                name: 'validateEmail: email válido deve passar',
+                fn: () => {
+                    const result = validateEmail('user@example.com')
+                    assert.strictEqual(result, true, 'Email deveria ser válido')
+                }
+            },
+            {
+                name: 'validateEmail: email inválido deve falhar',
+                fn: () => {
+                    const result = validateEmail('invalid-email')
+                    assert.strictEqual(result, false, 'Email deveria ser inválido')
+                }
+            }
+        ]
+
+        let passed = 0
+        let failed = 0
+
+        for (const test of tests) {
+            try {
+                await test.fn()
+                console.log(`✓ ${test.name}`)
+                passed++
+            } catch (error) {
+                console.error(`✗ ${test.name}`)
+                console.error(`  ${error.message}`)
+                failed++
+            }
+        }
+
+        console.log(`\nResultado: ${passed} passou, ${failed} falhou`)
+
+        return failed === 0
+    }
+}
+```
+
+2. **Pronto!** O teste será automaticamente carregado e executado.
+
+### Estrutura de um Teste
+
+Cada arquivo de teste deve exportar um objeto padrão com:
+
+```javascript
+export default {
+    // Nome da suite de testes
+    name: 'Suite Name',
+    
+    // Função assíncrona que executa todos os testes
+    async run() {
+        // Definir testes
+        const tests = [
+            {
+                name: 'Descrição do teste',
+                fn: () => {
+                    // Usar assert para validações
+                    assert.strictEqual(resultado, esperado)
+                }
+            }
+        ]
+
+        // Executar testes
+        let passed = 0, failed = 0
+        for (const test of tests) {
+            try {
+                await test.fn()
+                console.log(`✓ ${test.name}`)
+                passed++
+            } catch (error) {
+                console.error(`✗ ${test.name}`)
+                console.error(`  ${error.message}`)
+                failed++
+            }
+        }
+
+        // Retornar true se todos passarem
+        return failed === 0
+    }
+}
+```
+
+### Usando Assert
+
+O `assert` nativo do Node.js fornece várias funções úteis:
+
+```javascript
+import assert from 'node:assert'
+
+// Igualdade estrita
+assert.strictEqual(2 + 2, 4, 'Mensagem de erro')
+
+// Igualdade profunda (objetos)
+assert.deepStrictEqual({ a: 1 }, { a: 1 })
+
+// Verdadeiro/Falso
+assert.ok(true, 'Deveria ser verdadeiro')
+
+// Falha um teste explicitamente
+assert.fail('Este teste falhou')
+
+// Verificar se é uma instância
+assert(value instanceof MyClass)
+
+// Throws: verificar se função lança erro
+assert.throws(() => {
+    throw new Error('Erro esperado')
+})
+```
+
+### Como Executar Testes
+
+**Na máquina local:**
+
+```sh
+node _command.js test
+```
+
+**Dentro do Docker (efêmero):**
+
+```sh
+docker compose run --rm nodecommand-container node _command.js test
+```
+
+### Exemplo de Saída
+
+```
+Executando 1 arquivo(s) de teste...
+
+📋 Example Tests
+──────────────────────────────────────────────────
+
+✓ sum: 2 + 3 deve ser 5
+✓ multiply: 4 * 5 deve ser 20
+✓ isEven: 4 deve ser par
+✓ isEven: 5 não deve ser par
+
+Resultado: 4 passou, 0 falhou
+
+==================================================
+✓ 1 suite(s) passou
+✗ 0 suite(s) falhou
+==================================================
+```
 
