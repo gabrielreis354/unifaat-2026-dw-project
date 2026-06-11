@@ -10,7 +10,7 @@ services:
       - .env.docker
     volumes:
       - .:/app
-      - nodemodules-volume:/app/node_modules
+      - nodemodules13-volume:/app/node_modules
     depends_on:
       - postgres-container
     environment:
@@ -32,7 +32,7 @@ services:
       - .env.docker
     volumes:
       - .:/app
-      - nodemodules-volume:/app/node_modules
+      - nodemodules13-volume:/app/node_modules
     depends_on:
       - postgres-container
     environment:
@@ -71,7 +71,7 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - postgres-volume:/var/lib/postgresql
+      - postgres13-volume:/var/lib/postgresql
       - ./docker/postgres/init:/docker-entrypoint-initdb.d
     networks:
       app-network:
@@ -83,5 +83,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres-volume:
-  nodemodules-volume:
+  postgres13-volume:
+  nodemodules13-volume:
