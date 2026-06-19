@@ -16,4 +16,4 @@ RUN npm install -g nodemon && npm install
 # EXPOSE 3000
 
 # Comando padrão ao iniciar o container
-ENTRYPOINT ["nodemon", "_worker.js"]
+ENTRYPOINT ["nodemon", "_worker.js", "--queue", "executar-job"]
